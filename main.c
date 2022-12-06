@@ -49,7 +49,8 @@ int main(int argc, const char * argv[]) {
     {
     	for(i=0;i<N_HISTORY;i++)
     		fscanf(fp,"%d", &placeHist[i]);
-    	//ifsele_genElement(pIndex,age,time,placeHist[N_HISTORY]);
+    	ifct_element=ifsele_genElement(index,age,time,place[N_HISTORY]);
+    	ifctdb_addTail(ifct_element);//링크드 리스트에 환자정보 저장 
 	}
 	
 	
@@ -72,7 +73,7 @@ int main(int argc, const char * argv[]) {
         printf("1. Print details about a patient.\n");                      //MENU_PATIENT
         printf("2. Print list of patients infected at a place.\n");        //MENU_PLACE
         printf("3. Print list of patients in a range of age.\n");          //MENU_AGE
-        printf("4. Track the root of the infection\n");                     //MENU_TRACK
+        printf("4. Track the root of the infection\n");                     //MENU_TRACK   //15주차때 알고리즘 힌트 줄거임 
         printf("0. Exit.\n");                                               //MENU_EXIT
         printf("=============== ------------------------------------------------------- =============\n\n");
         
@@ -86,7 +87,7 @@ int main(int argc, const char * argv[]) {
                 printf("Exiting the program... Bye bye.\n");
                 break;
                 
-            case MENU_PATIENT:
+            case MENU_PATIENT: //14주차 실습 ppt맨마지막 참고 
             	printf("put a patient number : ");
             	scanf("%d", &ifct_element);
                 printf("age : %i\n", ifctele_getAge(ifct_element));

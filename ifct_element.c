@@ -106,32 +106,33 @@ char* ifctele_getPlaceName(int placeIndex)
 
 //구조체틀  
 typedef struct ifs_ele{
-	int pIndex;//번호 정수 
+	int index;//번호 정수 
 	int age;//나이 정수 
 	int time;//감염시점 일수로 따짐 정수 
-	place_t placeHist[N_HISTORY];//감염직전 이동경로 5개경로 enum변수선언 (정수) (enum) place_t 배열  사이즈:(N_HISTORY) 매크로 
+	place_t place[N_HISTORY];//감염직전 이동경로 5개경로 enum변수선언 (정수) (enum) place_t 배열  사이즈:(N_HISTORY) 매크로 
 }ifs_ele_t;
 
 //구조체 변수 선언 (인스턴스)
-static ifs_ele_t ifsarray[20]; //구조체 배열..20명 환자 ... 나중에 linked list로 바꿀거임
-static int ifs_cnt; //들어있는 환자 정보 수...전역변수 초기값=0 
+//static ifs_ele_t ifsarray[20]; //구조체 배열..20명 환자 ... 나중에 linked list로 바꿀거임///배열 단점은 개수제한이 있다는점 ->링크드리스트(개수제한없음,구조체)를 사용 ,필요할때마다 동적메모리 핟당받아서 연결 
+//static int ifs_cnt; //들어있는 환자 정보 수...전역변수 초기값=0 
 
 //구조체에 정보저장 
 void* ifctele_genElement(int index, int age, unsigned int detected_time,
 	 int history_place[N_HISTORY])
 	 {
-	 	
-		ifsarray[ifs_cnt].pIndex= index;
-		ifsarray[ifs_cnt].age= age;
-		ifsarray[ifs_cnt].time= detected_time;
+		ifs_ele_t *strPtr =malloc(); 
+		strPtr->index=index; //포인터 변수 접근 
+		//ifsarray[ifs_cnt].index= index;//배열 접근 
+		//ifsarray[ifs_cnt].age= age;
+		//ifsarray[ifs_cnt].time= detected_time;
 		//for(int i=0;i<N_HISTORY;i++)
 		{ifsarray[ifs_cnt].placeHist[N_HISTORY]= history_place[N_HISTORY];}
 		 
 		ifs_cnt++;
 		
 		
-		return (void*)&ifsarray[ifs_cnt-1]; //변수 주소  
-		 	
+		return &ifsarray[ifs_cnt-1]; //변수 주소  
+		//이 함수에서 free하면 안됨	
 	 }
 
 int ifctele_getAge(void* obj) // 메인함수에서 불러올 함수 .. 구조체 안에서 나이 정보를 빼주는 함수 
@@ -139,13 +140,19 @@ int ifctele_getAge(void* obj) // 메인함수에서 불러올 함수 .. 구조체 안에서 나이 
 	//ifs_ele_t *strPtr = & ifsarray[(ifs_ele_t *)obj]; //구조체 포인터 ??????????????????????????????????????????????????????????????????????????????????????? 모르겠음 
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
 	return (strPtr-> age); //나이 출력 ...구조체 포인터로 멤버 접근 
+
 }
+int ifctele_getHistPlaceIndex(void* obj, int index)
+{
+	
+};
 
 void ifsele_printElement(void* obj)//구조체 받아서 전체  출력 함수 
 {
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
 	
 	//print elements
+	printf("Age : %i\n", strPtr->age);
 	
 }
 
