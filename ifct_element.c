@@ -151,10 +151,10 @@ int ifctele_getAge(void* obj) // 메인함수에서 불러올 함수 .. 구조체 안에서 나이 
 	return (strPtr-> age); //나이 출력 ...구조체 포인터로 멤버 접근 
 
 }
-int ifctele_getHistPlaceIndex(void* obj, int index) //index=몇번째 장소인지 
+int ifctele_getHistPlaceIndex(void* obj, int index) //index=몇번째 장소인지...해당 구조체의 index번째 장소 정수 반환 
 {
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
-	return (int)(strPtr->place[index]);
+	return (strPtr->place[index]);
 };
 
 unsigned int ifctele_getinfestedTime(void* obj)

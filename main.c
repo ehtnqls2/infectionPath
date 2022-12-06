@@ -28,7 +28,7 @@ int main(int argc, const char * argv[]) {
     int pIndex, age, time;
     int placeHist[N_HISTORY];
     int i;
-    char* place;
+    
     
     //------------- 1. loading patient info file ------------------------------
     //1-1. FILE pointer open
@@ -69,7 +69,7 @@ int main(int argc, const char * argv[]) {
     	 
     	printf("The first place is %s\n", ifctele_getPlaceName(place1));
     	printf("The second place is %s\n", ifctele_getPlaceName(place2));
-    	
+    	//printf("%d %d %d %d %d",pIndex,age,time,placeHist[0],placeHist[1]);
     	
 	}
     
@@ -104,29 +104,55 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case MENU_PLACE:
+            	{
+				char* place;
                 printf("Place Name : ");
                 scanf("%s",place);
                 printf("%s\n",place);
     			int cnt=0;
+    			
+    			//printf("%i",ifctdb_len());
                 for(pIndex=0;pIndex<ifctdb_len();pIndex++) //환자 한명씩 확진장소 비교 
                 {
                 	ifct_element=ifctdb_getData(pIndex); //포인터 
                 	
-					if(place=ifctele_getPlaceName(ifctele_getHistPlaceIndex(ifct_element, N_HISTORY-1)));
+					if(place=ifctele_getPlaceName(ifctele_getHistPlaceIndex(ifct_element, (N_HISTORY-1))))
 						{
 							ifctele_printElement(ifct_element);
 							cnt++;
 						}
-						
+					
 					//printf("%d",ifctele_getHistPlaceIndex(ifct_element, N_HISTORY-1));
 					
 				}
 				printf("There are %i patients detected in %s. \n",cnt,place);
                 break;
+            	}
                 
             case MENU_AGE:
+				{
+				int min,max;
+				int cnt=0;
+				
+                printf("minimal age : ");
+                scanf("%d",&min);
+                printf("maximal age : ");
+                scanf("%d", &max);
                 
+                for(pIndex=0;pIndex<ifctdb_len();pIndex++)
+                {
+                	ifct_element=ifctdb_getData(pIndex);
+                	age=ifctele_getAge(ifct_element);
+                	if(age>=min && age<=max)
+                	{
+                		ifctele_printElement(ifct_element);
+                		cnt++;
+					}
+                	
+				}
+                printf("There are %d patients whose age is between %d and %d.\n",cnt,min,max);
                 break;
+            	}
                 
             case MENU_TRACK:
                     
