@@ -45,13 +45,14 @@ int main(int argc, const char * argv[]) {
     }
     
     //1-2. loading each patient informations
-    while (3== fscanf("%d %d %d", &pIndex,&age,&time))
+    while (3== fscanf(fp,"%d %d %d", &pIndex,&age,&time))
     {
     	for(i=0;i<N_HISTORY;i++)
-    		fscanf("%d",&placeHist[i]);
+    		fscanf(fp,"%d", &placeHist[i]);
+    	//ifsele_genElement(pIndex,age,time,placeHist[N_HISTORY]);
 	}
 	
-	ifsele_genElement(,,,);
+	
     //1-3. FILE pointer close
     fclose(fp);
     
@@ -86,7 +87,9 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case MENU_PATIENT:
-                
+            	printf("put a patient number : ");
+            	scanf("%d", &ifct_element);
+                printf("age : %i\n", ifctele_getAge(ifct_element));
                 break;
                 
             case MENU_PLACE:
