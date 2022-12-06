@@ -28,6 +28,7 @@ int main(int argc, const char * argv[]) {
     int pIndex, age, time;
     int placeHist[N_HISTORY];
     int i;
+    char* place;
     
     //------------- 1. loading patient info file ------------------------------
     //1-1. FILE pointer open
@@ -51,7 +52,7 @@ int main(int argc, const char * argv[]) {
     		{
 			fscanf(fp,"%d", &placeHist[i]);
 			}
-    	ifct_element=ifctele_genElement(pIndex,age,time,placeHist[N_HISTORY]); //포인터 
+    	ifct_element=ifctele_genElement(pIndex,age,time,placeHist); //포인터 
     	ifctdb_addTail(ifct_element);//링크드 리스트에 환자정보 저장 
     	
 	}
@@ -103,7 +104,24 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case MENU_PLACE:
-                
+                printf("Place Name : ");
+                scanf("%s",place);
+                printf("%s\n",place);
+    			int cnt=0;
+                for(pIndex=0;pIndex<ifctdb_len();pIndex++) //환자 한명씩 확진장소 비교 
+                {
+                	ifct_element=ifctdb_getData(pIndex); //포인터 
+                	
+					if(place=ifctele_getPlaceName(ifctele_getHistPlaceIndex(ifct_element, N_HISTORY-1)));
+						{
+							ifctele_printElement(ifct_element);
+							cnt++;
+						}
+						
+					//printf("%d",ifctele_getHistPlaceIndex(ifct_element, N_HISTORY-1));
+					
+				}
+				printf("There are %i patients detected in %s. \n",cnt,place);
                 break;
                 
             case MENU_AGE:

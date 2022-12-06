@@ -151,14 +151,16 @@ int ifctele_getAge(void* obj) // 메인함수에서 불러올 함수 .. 구조체 안에서 나이 
 	return (strPtr-> age); //나이 출력 ...구조체 포인터로 멤버 접근 
 
 }
-int ifctele_getHistPlaceIndex(void* obj, int index)
+int ifctele_getHistPlaceIndex(void* obj, int index) //index=몇번째 장소인지 
 {
-	
+	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
+	return (int)(strPtr->place[index]);
 };
 
 unsigned int ifctele_getinfestedTime(void* obj)
 {
-	
+	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
+	return (strPtr->time);
 };
 
 void ifctele_printElement(void* obj)//구조체 받아서 전체  출력 함수 
@@ -178,7 +180,7 @@ void ifctele_printElement(void* obj)//구조체 받아서 전체  출력 함수
 		if(i<N_HISTORY -1)
 			printf("->");
 	}
-	printf("\n----------------------------------");
+	printf("\n--------------------------------------\n");
 
 	
 	
