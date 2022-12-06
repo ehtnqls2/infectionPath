@@ -118,27 +118,36 @@ typedef struct ifs_ele{
 
 //구조체에 정보저장 
 void* ifctele_genElement(int index, int age, unsigned int detected_time,
-	 int history_place[N_HISTORY])
+	 int history_place[N_HISTORY])                                        // 구조체 하나 생성해주는 함수 
 	 {
-		ifs_ele_t *strPtr =malloc(); 
-		strPtr->index=index; //포인터 변수 접근 
-		//ifsarray[ifs_cnt].index= index;//배열 접근 
-		//ifsarray[ifs_cnt].age= age;
-		//ifsarray[ifs_cnt].time= detected_time;
-		//for(int i=0;i<N_HISTORY;i++)
-		{ifsarray[ifs_cnt].placeHist[N_HISTORY]= history_place[N_HISTORY];}
+		ifs_ele_t *strPtr;
+		strPtr =(ifs_ele_t *)malloc(sizeof(ifs_ele_t)); 
+		strPtr->index=index; //포인터 변수 접근
+		strPtr->age=age;
+		strPtr->time=detected_time;
+		
+		//strPtr->place[N_HISTORY]=(place_t)history_place[N_HISTORY];
+		
+		int i;
+		for(i=0;i<N_HISTORY;i++)
+		{
+			strPtr->place[i]=(place_t)history_place[i]; 
+		}
+		
+		
+		//{ifsarray[ifs_cnt].placeHist[N_HISTORY]= history_place[N_HISTORY];}
 		 
-		ifs_cnt++;
+		//ifs_cnt++;
 		
+		return strPtr;
 		
-		return &ifsarray[ifs_cnt-1]; //변수 주소  
 		//이 함수에서 free하면 안됨	
 	 }
 
 int ifctele_getAge(void* obj) // 메인함수에서 불러올 함수 .. 구조체 안에서 나이 정보를 빼주는 함수 
-{
+{	//odj는 구조체임 
 	//ifs_ele_t *strPtr = & ifsarray[(ifs_ele_t *)obj]; //구조체 포인터 ??????????????????????????????????????????????????????????????????????????????????????? 모르겠음 
-	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
+	ifs_ele_t *strPtr = (ifs_ele_t *)obj; //구조체 포인터 정의와 동시에 초기값(특정 구조체의 포인터) 설정 
 	return (strPtr-> age); //나이 출력 ...구조체 포인터로 멤버 접근 
 
 }
@@ -147,12 +156,31 @@ int ifctele_getHistPlaceIndex(void* obj, int index)
 	
 };
 
-void ifsele_printElement(void* obj)//구조체 받아서 전체  출력 함수 
+unsigned int ifctele_getinfestedTime(void* obj)
+{
+	
+};
+
+void ifctele_printElement(void* obj)//구조체 받아서 전체  출력 함수 
 {
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
 	
 	//print elements
-	printf("Age : %i\n", strPtr->age);
+	printf("--------------------------------------\n");
+	printf("Patient index : %d\n",strPtr->index);
+	printf("Patient age : %d\n", strPtr->age);
+	printf("Detected time : %d\n",strPtr->time);
+	printf("Path History : ");
+	int i;
+	for(i=0;i<N_HISTORY;i++)
+	{
+		printf("%s(%i)",ifctele_getPlaceName(strPtr->place[i]),(strPtr->time)-(N_HISTORY -i-1));
+		if(i<N_HISTORY -1)
+			printf("->");
+	}
+	printf("\n----------------------------------");
+
+	
 	
 }
 

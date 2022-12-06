@@ -48,9 +48,12 @@ int main(int argc, const char * argv[]) {
     while (3== fscanf(fp,"%d %d %d", &pIndex,&age,&time))
     {
     	for(i=0;i<N_HISTORY;i++)
-    		fscanf(fp,"%d", &placeHist[i]);
-    	ifct_element=ifsele_genElement(index,age,time,place[N_HISTORY]);
+    		{
+			fscanf(fp,"%d", &placeHist[i]);
+			}
+    	ifct_element=ifctele_genElement(pIndex,age,time,placeHist[N_HISTORY]); //포인터 
     	ifctdb_addTail(ifct_element);//링크드 리스트에 환자정보 저장 
+    	
 	}
 	
 	
@@ -65,6 +68,7 @@ int main(int argc, const char * argv[]) {
     	 
     	printf("The first place is %s\n", ifctele_getPlaceName(place1));
     	printf("The second place is %s\n", ifctele_getPlaceName(place2));
+    	
     	
 	}
     
@@ -88,9 +92,14 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case MENU_PATIENT: //14주차 실습 ppt맨마지막 참고 
-            	printf("put a patient number : ");
-            	scanf("%d", &ifct_element);
-                printf("age : %i\n", ifctele_getAge(ifct_element));
+            	
+            	printf("Patient index : ");
+            	scanf("%d",&pIndex);
+            	ifct_element=ifctdb_getData(pIndex);
+            	ifctele_printElement(ifct_element);
+            	
+            	//scanf("%d", &ifct_element);
+                //printf("age : %i\n", ifctele_getAge(ifct_element));
                 break;
                 
             case MENU_PLACE:
