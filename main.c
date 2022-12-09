@@ -61,17 +61,6 @@ int main(int argc, const char * argv[]) {
     //1-3. FILE pointer close
     fclose(fp);
     
-    {
-    	int place1, place2;
-
-    	place1=3;
-    	place2=15;
-    	 
-    	printf("The first place is %s\n", ifctele_getPlaceName(place1));
-    	printf("The second place is %s\n", ifctele_getPlaceName(place2));
-    	//printf("%d %d %d %d %d",pIndex,age,time,placeHist[0],placeHist[1]);
-    	
-	}
     
     do {
         printf("\n=============== INFECTION PATH MANAGEMENT PROGRAM (No. of patients : %i) =============\n", ifctdb_len());
@@ -99,30 +88,30 @@ int main(int argc, const char * argv[]) {
             	ifct_element=ifctdb_getData(pIndex);
             	ifctele_printElement(ifct_element);
             	
-            	//scanf("%d", &ifct_element);
-                //printf("age : %i\n", ifctele_getAge(ifct_element));
                 break;
                 
             case MENU_PLACE:
             	{
 				char* place;
+				int cnt=0;
+    			char* Place;
+    			
                 printf("Place Name : ");
                 scanf("%s",place);
-                printf("%s\n",place);
-    			int cnt=0;
+                
+    			place=strcat(place,"\0");
     			
-    			//printf("%i",ifctdb_len());
                 for(pIndex=0;pIndex<ifctdb_len();pIndex++) //환자 한명씩 확진장소 비교 
                 {
                 	ifct_element=ifctdb_getData(pIndex); //포인터 
-                	
-					if(place=ifctele_getPlaceName(ifctele_getHistPlaceIndex(ifct_element, (N_HISTORY-1))))
+                	Place=ifctele_getPlaceName(ifctele_getHistPlaceIndex(ifct_element, N_HISTORY-1));
+					if(strcmp(place,Place)==0)
 						{
 							ifctele_printElement(ifct_element);
 							cnt++;
 						}
 					
-					//printf("%d",ifctele_getHistPlaceIndex(ifct_element, N_HISTORY-1));
+					
 					
 				}
 				printf("There are %i patients detected in %s. \n",cnt,place);

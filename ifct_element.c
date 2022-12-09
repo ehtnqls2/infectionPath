@@ -155,7 +155,7 @@ int ifctele_getHistPlaceIndex(void* obj, int index) //index=몇번째 장소인지...해
 {
 	
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
-	strPtr->place[index]
+	
 	return (strPtr->place[index]);
 };
 
