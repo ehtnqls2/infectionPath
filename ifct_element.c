@@ -188,3 +188,4 @@ void ifctele_printElement(void* obj)//구조체 받아서 전체  출력 함수
 	
 }
 
+
