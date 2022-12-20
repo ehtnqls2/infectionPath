@@ -20,8 +20,9 @@
 #define TIME_HIDE           2
 
 
-int trackInfester(int patient_no, int *detected_time, int *place);
-//int isMet(int patient_no,int i);
+int trackInfester(int patient1, int *detected_time, int *place); //환자 번호, 감염날짜 숫자, 감염장소 숫자 포인터 
+int isMet(int patient1,int patient2,int *place);
+
 int main(int argc, const char * argv[]) {
     
     int menu_selection;
@@ -116,6 +117,8 @@ int main(int argc, const char * argv[]) {
 				}
 				printf("There are %i patients detected in %s. \n",cnt,place);
 				
+				free(place); 
+				
                 break;
             	}
                 
@@ -146,33 +149,56 @@ int main(int argc, const char * argv[]) {
                 
             case MENU_TRACK:
                 {
-                int infector;
-                int *detected_time;
-                int *place;
+                
+                int patient; //현재환자 
+                int infector; // 전파자 
+                int firstInfector; //최초 전파자 
+                int time;
+				int *detected_time;
+				detected_time=&time;
+                int Place;
+				int *place;
+				//Place= (int *)malloc(sizeof(int)); 
+				//int *place;
+				place=&Place;
+				//printf("%i",Place);
+				
                 
                 printf("Patient index : ");
-				scanf("%d", &pIndex);
+				scanf("%d", &patient); //현재환자 변수에 입력값 받음 
 				
+				printf("%i\n",patient);
+				printf("%i\n",infector);
+				printf("%i\n",firstInfector);
 				
-				
-				while(pIndex)//현재환자가 누군가 있음 
+				while(patient>=0)//조건 : 현재환자가 누군가 있음  // 최조전파자 찾은경우 patient값이 -1이 돼서 반복문 멈춤 
 				{
-					ifct_element=ifctdb_getData(pIndex);
+					ifct_element=ifctdb_getData(patient);
 					*detected_time=ifctele_getinfestedTime(ifct_element);
-					*place=ifctele_getHistPlaceIndex(ifct_element, N_HISTORY-1);
+					printf("%i",time);
+					//place=ifctele_getHistPlaceIndex(ifct_element, N_HISTORY-1);
 					
-					infector=trackInfester(pIndex,detected_time,place);
+					infector=trackInfester(patient, detected_time, place); //infector :전파자 환자번호 반환 받음 //전파자 없을 경우 -1 반환!!! 
+					printf("%i\n",infector);
 					
-					if(infector)//전파자 있을때 
-						printf("--> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",pIndex,infector,time,place);
-					else
-						infector=pIndex;
-					pIndex=infector; 
+					if(infector>=0)//전파자 있을때 //infetor: 환자번호 -> 0이상의 정수 
+						printf("--> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",patient,infector,time,ifctele_getPlaceName(*place));   //전파된 시간이랑 장소 알아야함 어떻게??? 
+					
+					else  //전파자 없을때 -> infector : -1 
+						{
+						firstInfector=patient; //최초전파자=현재환자 
+						printf("%i\n",firstInfector);
+						printf("%i\n",patient);
+						}
+						
+					patient=infector;  //현재환자=전파자 
 						
 				}
-                
+                printf("%i",time);
                 //printf("--> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",pIndex,infector,time,place);
-                printf("The first infector of %d is %d",pIndex,infector);
+                printf("The first infector of %d is %d\n",patient,firstInfector);
+                printf("%i\n",place);
+                printf("%i,%s",isMet(0,2,place),ifctele_getPlaceName(*place));
                 
                 break;
             	}
@@ -184,38 +210,85 @@ int main(int argc, const char * argv[]) {
     
     } while(menu_selection != 0);
     
-    
     return 0;
 }
 
-int trackInfester(int patient_no, int *detected_time, int *place){
-	int i,infector;
-	int met_time;
-	int MetTime= *detected_time;/////////////////////////////////////////////
-	for(i=0;i<ifctdb_len();i++)
+int trackInfester(int patient1, int *detected_time, int *place)
+{
+	int infector=-1; // 전파자
+	//int time=*detected_time;//현재환자의 확진일자 
+	
+	int MetTime; //최초전파자 후보와 접촉한 일자 
+	int patient2;
+	 
+	for(patient2=0;patient2<ifctdb_len();patient2++) //모든 환자 한명씩 대조 //환자 명수 변경해 ////////////////////////////////////////////////////////////////////////////////////////////////// 
 	{
-		met_time=isMet(patient_no,i);
-		if(met_time>0)
+		if(patient2 =! patient1) //현재환자 본인과의 비교 제외 !
 		{
-			if(met_time<MetTime)
+			MetTime=isMet(patient1,patient2,place); //만난시간 반환 받음 //안만났을경우 -1 반환 받음 
+			//printf("%i",MetTime);
+			
+			if(MetTime>0) //만났다면 // 같은장소&&같은시간 
 			{
-				infector=i;
+				if(MetTime< *detected_time) //지금까지 환자 중 만난시간이 가장 이를 경우 //현재환자가 확진된 일자와 비교 -> 현재환자와 전파자가 접촉한 일자는 현재환자가 확진된 일자보다 무조건 이름 
+				{
+					infector=patient2; //전파자=비교대상환자 
+					*detected_time=MetTime; //전파된 날짜 설정 
+				}
 			}
 		}
 	}
+	//printf("%i",patient2);
+	//printf("%i", infector);
+	
 	return infector ;
+	
 }
-int isMet(int patient_no,int i){
-	int j,time,place,Place,MetTime;
-	void *ifct_element;
-	for(j=0;j<N_HISTORY-1;j++)//j번쨰 장소 
-	{
-		time=i-(N_HISTORY-1-j);//현재환자의 i번째 이동장소 '시점' 계산 
-		//그 계산된 '시점'에서의 대상환자 이동장소 계산 
-		place=ifctele_getHistPlaceIndex(ifct_element, j);//현재환자의 i번째 이동장소 
-		if(place==Place)
-			MetTime=time; //만난시간=i번째 이동장소 시점 
+
+int isMet(int patient1,int patient2,int *place)
+{
+	int i,m,time,place1,place2,MetTime=-1;
+	
+	void *ifct_element1; //현재환자에 대한 정보 포인터 
+	void *ifct_element2; //비교대상환자에 대한 정보 포인터 
+	
+	ifct_element1=ifctdb_getData(patient1);
+	ifct_element2=ifctdb_getData(patient2);
+ 
+	//우선 현재환자의 '감염의심기간'과 비교대상환자의 '전파기간'이 단 하루라도  겹치는지 비교 
+	int k,j;
+	k=ifctele_getinfestedTime(ifct_element1);//현재환자의 확진일자 
+	j=ifctele_getinfestedTime(ifct_element2);//비교대상환자의 확진일자 
+	
+	
+
+	for(i=0;i<3;i++)//i번쨰 장소 //감염의심 기간 동안의 장소 // 0~2번째 장소 
+	{ 
+		time=k-(N_HISTORY-1-i);//현재환자의 i번째 이동장소 '시점' 계산 
+		if(time==j || time==j-1)//그 시점이 비교대상환자의 전파기간과 겹치는지 비교//겹치는 경우 
+		{
+			place1=ifctele_getHistPlaceIndex(ifct_element1, i);//현재환자의 i번째 이동장소 
+			//printf("%i\n",place1);
+			//그 계산된 '시점'에서의 대상환자 이동장소 계산 // 
+			m=4-(j-time); //비교대상환자의 몇번째 이동장소 인지 계산 
+			place2=ifctele_getHistPlaceIndex(ifct_element2, m);//비교대상환자의 time시점일떄의 이동장소(비교대상환자의 m 번째 이동장소)
+			//printf("%i%i\n",place1,place2);
+			if(place1==place2)
+			{
+				//printf("%i\n",place1);
+				//printf("%i\n",place2);
+				MetTime=time; //만난시간=i번째 이동장소 시점 
+				*place=place1;
+				//printf("%i",*place);
+				
+				break;
+			} //가장 이른 시점만 필요 
+		}
 		
 	}
+	//printf("%i\n",place1);
+	//printf("%i\n",place2);
+	//printf("%i",*place);
 	return MetTime; 
 }
+	
