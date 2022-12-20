@@ -54,7 +54,7 @@ typedef enum place {
     CapeTown        //39
 } place_t;
 
-//2차원배열 행은 장소개수 열은 장소알파벳개수 문자형배열로 저장한거임 ...+1은 null 문자때문에..아마도 
+//2차원배열 (행은 장소개수 열은 장소알파벳개수) 문자형변수배열로 저장
 char countryName[N_PLACE+1][MAX_PLACENAME] = 
 {   "Seoul",
     "Jeju",
@@ -98,74 +98,62 @@ char countryName[N_PLACE+1][MAX_PLACENAME] =
     "CapeTown",
     "Unrecognized"
 };
+
 //장소에 해당하는 숫자를 입력받아서 해당 장소를 문자형으로 반환해주는 함수 
 char* ifctele_getPlaceName(int placeIndex)
 {
-	return countryName[placeIndex]; //placeIndex 번째 행 전체  반환 
+	return countryName[placeIndex]; 
  } 
 
 //구조체틀  
 typedef struct ifs_ele{
-	int index;//번호 정수 
-	int age;//나이 정수 
-	int time;//감염시점 일수로 따짐 정수 
-	place_t place[N_HISTORY];//감염직전 이동경로 5개경로 enum변수선언 (정수) (enum) place_t 배열  사이즈:(N_HISTORY) 매크로 
+	int index;                    //환자번호
+	int age;                      //나이  
+	int time;                     //감염시점 일자 
+	place_t place[N_HISTORY];     //감염직전 이동경로 5개경로 
 }ifs_ele_t;
 
-//구조체 변수 선언 (인스턴스)
-//static ifs_ele_t ifsarray[20]; //구조체 배열..20명 환자 ... 나중에 linked list로 바꿀거임///배열 단점은 개수제한이 있다는점 ->링크드리스트(개수제한없음,구조체)를 사용 ,필요할때마다 동적메모리 핟당받아서 연결 
-//static int ifs_cnt; //들어있는 환자 정보 수...전역변수 초기값=0 
 
 //구조체에 정보저장 
 void* ifctele_genElement(int index, int age, unsigned int detected_time,
-	 int history_place[N_HISTORY])                                        // 구조체 하나 생성해주는 함수 
+	 int history_place[N_HISTORY])                                            // 구조체 하나 생성해주는 함수 
 	 {
 		ifs_ele_t *strPtr;
-		strPtr =(ifs_ele_t *)malloc(sizeof(ifs_ele_t)); 
-		strPtr->index=index; //포인터 변수 접근
+		strPtr =(ifs_ele_t *)malloc(sizeof(ifs_ele_t));  //구조체틀 메모리만큼의 동적메모리 할당 
+		strPtr->index=index; //포인터 변수 접근 후 정보 저장 
 		strPtr->age=age;
 		strPtr->time=detected_time;
-		
-		//strPtr->place[N_HISTORY]=(place_t)history_place[N_HISTORY];
 		
 		int i;
 		for(i=0;i<N_HISTORY;i++)
 		{
-			strPtr->place[i]=(place_t)history_place[i]; 
+			strPtr->place[i]=(place_t)history_place[i];   
 		}
-		
-		
-		//{ifsarray[ifs_cnt].placeHist[N_HISTORY]= history_place[N_HISTORY];}
-		 
-		//ifs_cnt++;
 		
 		return strPtr;
 		
-		//이 함수에서 free하면 안됨	????????????????????????????????????????????????????????어디다가 해야함?????????????????????? 
 	 }
 
-int ifctele_getAge(void* obj) // 메인함수에서 불러올 함수 .. 구조체 안에서 나이 정보를 빼주는 함수 
-{	//odj는 구조체임 
-	//ifs_ele_t *strPtr = & ifsarray[(ifs_ele_t *)obj];  
+int ifctele_getAge(void* obj)     //구조체 안에서 나이 정보를 빼주는 함수 
+{	
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj; //구조체 포인터 정의와 동시에 초기값(특정 구조체의 포인터) 설정 
 	return (strPtr-> age); //나이 출력 ...구조체 포인터로 멤버 접근 
-
 }
-int ifctele_getHistPlaceIndex(void* obj, int index) //index=몇번째 장소인지...해당 구조체의 index번째 장소 정수 반환 
+
+int ifctele_getHistPlaceIndex(void* obj, int index) //index=(몇번째 이동장소인지) // 해당 구조체의 index번째 장소 정수(enum) 반환 
 {
-	
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
 	
 	return (strPtr->place[index]);
 };
 
-unsigned int ifctele_getinfestedTime(void* obj)
+unsigned int ifctele_getinfestedTime(void* obj)  //해당 구조체중 감염시점 멤버 반환해주는 함수  
 {
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
 	return (strPtr->time);
 };
 
-void ifctele_printElement(void* obj)//구조체 받아서 전체  출력 함수 
+void ifctele_printElement(void* obj)   //구조체 받아서 전체 멤버  출력 함수 
 {
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
 	
@@ -178,7 +166,7 @@ void ifctele_printElement(void* obj)//구조체 받아서 전체  출력 함수
 	int i;
 	for(i=0;i<N_HISTORY;i++)
 	{
-		printf("%s(%i)",ifctele_getPlaceName(strPtr->place[i]),(strPtr->time)-(N_HISTORY -i-1));
+		printf("%s(%i)",ifctele_getPlaceName(strPtr->place[i]),(strPtr->time)-(N_HISTORY -i-1));     //장소이름(창권후 n일) -> 장소이름(창권후 n+1일 )-> .....형태로 출력 
 		if(i<N_HISTORY -1)
 			printf("->");
 	}

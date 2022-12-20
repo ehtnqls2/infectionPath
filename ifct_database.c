@@ -5,7 +5,7 @@
 //  Created by Juyeop Kim on 2022/10/20.
 //
 
-//linked list를 다루는 함수들 //건들필요 없음 
+//linked list를 다루는 함수들
 
 #include <stdio.h>
 #include <stdlib.h>
