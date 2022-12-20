@@ -21,7 +21,7 @@
 
 
 int trackInfester(int patient1, int *detected_time, int *place); //환자 번호, 감염날짜 숫자, 감염장소 숫자 포인터 
-int isMet(int patient1,int patient2,int *place);
+int isMet(int patient1,int patient2,int **place);
 
 int main(int argc, const char * argv[]) {
     
@@ -74,7 +74,7 @@ int main(int argc, const char * argv[]) {
         printf("0. Exit.\n");                                               //MENU_EXIT
         printf("=============== ------------------------------------------------------- =============\n\n");
         
-        printf("Select a menu :");
+        printf("Select a menu : ");
         scanf("%d", &menu_selection);
         fflush(stdin);
         
@@ -149,56 +149,56 @@ int main(int argc, const char * argv[]) {
                 
             case MENU_TRACK:
                 {
-                
+                int Patient;
                 int patient; //현재환자 
                 int infector; // 전파자 
                 int firstInfector; //최초 전파자 
                 int time;
 				int *detected_time;
 				detected_time=&time;
-                int Place;
-				int *place;
+                int place_1;
+				int *place_2;
 				//Place= (int *)malloc(sizeof(int)); 
 				//int *place;
-				place=&Place;
+				place_2=&place_1;
 				//printf("%i",Place);
 				
                 
                 printf("Patient index : ");
-				scanf("%d", &patient); //현재환자 변수에 입력값 받음 
-				
-				printf("%i\n",patient);
-				printf("%i\n",infector);
-				printf("%i\n",firstInfector);
+				scanf("%d", &Patient); //현재환자 변수에 입력값 받음 
+				patient=Patient;
+				//printf("%i\n",patient);
+				//printf("%i\n",infector);
+				//printf("%i\n",firstInfector);
 				
 				while(patient>=0)//조건 : 현재환자가 누군가 있음  // 최조전파자 찾은경우 patient값이 -1이 돼서 반복문 멈춤 
-				{
+				{	
 					ifct_element=ifctdb_getData(patient);
 					*detected_time=ifctele_getinfestedTime(ifct_element);
-					printf("%i",time);
+					//printf("%i",time);
 					//place=ifctele_getHistPlaceIndex(ifct_element, N_HISTORY-1);
 					
-					infector=trackInfester(patient, detected_time, place); //infector :전파자 환자번호 반환 받음 //전파자 없을 경우 -1 반환!!! 
-					printf("%i\n",infector);
+					infector=trackInfester(patient, detected_time, place_2); //infector :전파자 환자번호 반환 받음 //전파자 없을 경우 -1 반환!!! 
+					//printf("%i\n",infector);
 					
 					if(infector>=0)//전파자 있을때 //infetor: 환자번호 -> 0이상의 정수 
-						printf("--> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",patient,infector,time,ifctele_getPlaceName(*place));   //전파된 시간이랑 장소 알아야함 어떻게??? 
+						printf("--> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",patient,infector,time,ifctele_getPlaceName(place_1));   //전파된 시간이랑 장소 알아야함 어떻게??? 
 					
 					else  //전파자 없을때 -> infector : -1 
 						{
 						firstInfector=patient; //최초전파자=현재환자 
-						printf("%i\n",firstInfector);
-						printf("%i\n",patient);
+						//printf("%i\n",firstInfector);
+						//printf("%i\n",patient);
 						}
 						
 					patient=infector;  //현재환자=전파자 
 						
 				}
-                printf("%i",time);
+                //printf("%i",time);
                 //printf("--> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",pIndex,infector,time,place);
-                printf("The first infector of %d is %d\n",patient,firstInfector);
-                printf("%i\n",place);
-                printf("%i,%s",isMet(0,2,place),ifctele_getPlaceName(*place));
+                printf("The first infector of %d is %d\n",Patient,firstInfector);
+                //printf("%i\n",place_1);
+                //printf("%i,%s",isMet(0,2,place),ifctele_getPlaceName(place));
                 
                 break;
             	}
@@ -213,27 +213,31 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
-int trackInfester(int patient1, int *detected_time, int *place)
+int trackInfester(int patient1, int *detected_time, int *place_2)
 {
 	int infector=-1; // 전파자
 	//int time=*detected_time;//현재환자의 확진일자 
-	
+	int **place_3;
+	place_3=&place_2;
 	int MetTime; //최초전파자 후보와 접촉한 일자 
 	int patient2;
 	 
 	for(patient2=0;patient2<ifctdb_len();patient2++) //모든 환자 한명씩 대조 //환자 명수 변경해 ////////////////////////////////////////////////////////////////////////////////////////////////// 
 	{
-		if(patient2 =! patient1) //현재환자 본인과의 비교 제외 !
+		if(patient2 != patient1) //현재환자 본인과의 비교 제외 !
 		{
-			MetTime=isMet(patient1,patient2,place); //만난시간 반환 받음 //안만났을경우 -1 반환 받음 
+			//printf("patient1: %i, patient2: %i\n",patient1,patient2);
+			MetTime=isMet(patient1,patient2,place_3); //만난시간 반환 받음 //안만났을경우 -1 반환 받음 
 			//printf("%i",MetTime);
+			//printf("%i\n",MetTime);
 			
 			if(MetTime>0) //만났다면 // 같은장소&&같은시간 
 			{
 				if(MetTime< *detected_time) //지금까지 환자 중 만난시간이 가장 이를 경우 //현재환자가 확진된 일자와 비교 -> 현재환자와 전파자가 접촉한 일자는 현재환자가 확진된 일자보다 무조건 이름 
 				{
 					infector=patient2; //전파자=비교대상환자 
-					*detected_time=MetTime; //전파된 날짜 설정 
+					*detected_time=MetTime;
+					//printf("%i\n",*detected_time); //전파된 날짜 설정 
 				}
 			}
 		}
@@ -245,7 +249,7 @@ int trackInfester(int patient1, int *detected_time, int *place)
 	
 }
 
-int isMet(int patient1,int patient2,int *place)
+int isMet(int patient1,int patient2,int **place_3)
 {
 	int i,m,time,place1,place2,MetTime=-1;
 	
@@ -278,7 +282,7 @@ int isMet(int patient1,int patient2,int *place)
 				//printf("%i\n",place1);
 				//printf("%i\n",place2);
 				MetTime=time; //만난시간=i번째 이동장소 시점 
-				*place=place1;
+				**place_3=place1;
 				//printf("%i",*place);
 				
 				break;
@@ -290,5 +294,6 @@ int isMet(int patient1,int patient2,int *place)
 	//printf("%i\n",place2);
 	//printf("%i",*place);
 	return MetTime; 
+	
 }
 	
